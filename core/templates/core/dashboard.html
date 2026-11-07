@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900">Your Synced Courses</h1>
+            <p class="text-sm text-gray-600 mt-1">Courses pulled from your Blackboard extension appear here automatically.</p>
+        </div>
+    </div>
+
+    {% if courses %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for course in courses %}
+                <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-200 flex flex-col justify-between hover:shadow-md transition">
+                    <div class="p-5">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-indigo-100 text-indigo-800">{{ course.code }}</span>
+                            <span class="text-sm text-gray-500">Target: <strong class="text-indigo-600">{{ course.target_grade }}</strong></span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mt-3">{{ course.name }}</h3>
+                        <p class="text-xs text-gray-400 mt-1">Last Synced: {{ course.updated_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3 border-t border-gray-200 flex justify-end">
+                        <a href="{% url 'course_detail' course.id %}" class="text-sm font-medium text-indigo-600 hover:text-indigo-900">View Study Plan & Chat &rarr;</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white border border-dashed border-gray-300 rounded-lg p-12 text-center">
+            <h3 class="text-lg font-medium text-gray-900">No courses synced yet</h3>
+            <p class="text-sm text-gray-500 mt-1">Use your browser extension while logged into Blackboard to sync your first course!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

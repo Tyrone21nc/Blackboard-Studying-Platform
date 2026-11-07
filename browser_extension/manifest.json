@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Blackboard AI Study Assistant",
+  "version": "1.0",
+  "description": "This scrapes Blackboard courses, grades, and materials and syncs them to my local Django backend.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8000/*",
+    "https://*.blackboard.com/*",
+    "https://blackboard.umbc.edu/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.blackboard.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

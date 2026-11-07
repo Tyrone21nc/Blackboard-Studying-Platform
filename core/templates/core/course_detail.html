@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="space-y-8">
+    <div class="bg-white shadow rounded-lg p-6 border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-indigo-100 text-indigo-800">{{ course.code }}</span>
+            <h1 class="text-2xl font-bold text-gray-900 mt-1">{{ course.name }}</h1>
+        </div>
+        <form method="POST" class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border">
+            {% csrf_token %}
+            <label for="target_grade" class="text-sm font-medium text-gray-700">Target Grade:</label>
+            <select name="target_grade" id="target_grade" class="border-gray-300 rounded-md shadow-sm text-sm p-1 border">
+                <option value="A" {% if course.target_grade == 'A' %}selected{% endif %}>A</option>
+                <option value="B" {% if course.target_grade == 'B' %}selected{% endif %}>B</option>
+                <option value="C" {% if course.target_grade == 'C' %}selected{% endif %}>C</option>
+            </select>
+            <button type="submit" name="update_target" class="bg-indigo-600 text-white text-sm px-3 py-1.5 rounded-md hover:bg-indigo-700 transition">Update Plan</button>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="bg-white shadow rounded-lg p-6 border border-gray-200 space-y-4">
+            <h2 class="text-lg font-bold text-gray-900 border-b pb-2">Grade Breakdown</h2>
+            {% if grades %}
+                <ul class="divide-y divide-gray-200">
+                    {% for g in grades %}
+                        <li class="py-3 flex justify-between items-center text-sm">
+                            <div>
+                                <p class="font-medium text-gray-800">{{ g.assignment_name }}</p>
+                                <span class="text-xs text-gray-500">Weight: {{ g.weight }}%</span>
+                            </div>
+                            <span class="font-bold text-gray-900">
+                                {% if g.score is not None %}{{ g.score }}/{{ g.points_possible }}{% else %}Pending{% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-sm text-gray-500">No grades recorded yet for this course.</p>
+            {% endif %}
+        </div>
+
+        <div class="lg:col-span-2 bg-white shadow rounded-lg p-6 border border-gray-200 space-y-4">
+            <h2 class="text-lg font-bold text-gray-900 border-b pb-2">🤖 AI Generated Study Roadmap (Target: {{ course.target_grade }})</h2>
+            {% if latest_plan %}
+                <div class="prose max-w-none text-sm text-gray-700 whitespace-pre-line bg-gray-50 p-4 rounded-lg border">
+                    {{ latest_plan.plan_content }}
+                </div>
+            {% else %}
+                <p class="text-sm text-gray-500">Study plan is generating or awaiting data sync...</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6 border border-gray-200 space-y-4">
+        <h2 class="text-lg font-bold text-gray-900 border-b pb-2">💬 Course AI Study Assistant Chat</h2>
+        <div class="h-80 overflow-y-auto space-y-4 p-4 bg-gray-50 rounded-lg border flex flex-col">
+            {% if chat_messages %}
+                {% for msg in chat_messages %}
+                    <div class="flex {% if msg.sender == 'user' %}justify-end{% else %}justify-start{% endif %}">
+                        <div class="max-w-xl rounded-lg px-4 py-2 text-sm {% if msg.sender == 'user' %}bg-indigo-600 text-white{% else %}bg-white text-gray-800 border border-gray-200 shadow-sm{% endif %}">
+                            <p class="font-xs text-xs opacity-75 mb-1">{% if msg.sender == 'user' %}You{% else %}AI Tutor{% endif %}</p>
+                            <p class="whitespace-pre-line">{{ msg.message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="m-auto text-center text-gray-400 text-sm">
+                    Ask a question below about your lectures, notes, syllabus, or upcoming exams!
+                </div>
+            {% endif %}
+        </div>
+        <form method="POST" class="flex gap-2">
+            {% csrf_token %}
+            <input type="text" name="chat_message" placeholder="Ask about homework, lecture notes, or study tips..." required class="flex-grow border-gray-300 rounded-md shadow-sm border px-4 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition">Send</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
