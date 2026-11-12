@@ -79,7 +79,7 @@ def get_ai_chat_response(course_id, user_message):
     """
 
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3.8-flash',
         contents=prompt,
     )
     return response.text
